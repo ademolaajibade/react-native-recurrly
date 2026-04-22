@@ -1,10 +1,13 @@
 import "@/global.css";
 import { Link } from "expo-router";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
+
+
+import { SafeAreaView } from "react-native-safe-area-context";  
 
 export default function Index() {
   return (
-    <View className="flex-1 items-center justify-center bg-background">
+    <SafeAreaView className="flex-1 bg-background p-5">
       <Text className="text-xl font-bold text-success">
         Welcome to Nativewind!
       </Text>
@@ -16,9 +19,9 @@ export default function Index() {
       </Link>
       <Link
         href="/(auth)/sign-in"
-        className="mt-4 rounded bg-accent text-white p-4"
+        className="mt-4 rounded bg-primary text-white p-4"
       >
-        <Text>Sign in </Text>
+        <Text>Go to Sign in </Text>
       </Link>
       <Link
         href="/(auth)/sign-up"
@@ -32,13 +35,13 @@ export default function Index() {
       </Link>
       <Link
         href={{
-          pathname: "/subscriptions/[id]",
+          pathname: "/subscriptions/claude",
           params: { id: "claude" },
         }}
         className=""
       >
         <Text>Claude Max Subscription</Text>
       </Link>
-    </View>
+    </SafeAreaView>
   );
 }
