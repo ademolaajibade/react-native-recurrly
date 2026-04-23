@@ -2,8 +2,7 @@ import "@/global.css";
 import { Link } from "expo-router";
 import { Text } from "react-native";
 
-
-import { SafeAreaView } from "react-native-safe-area-context";  
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   return (
@@ -27,7 +26,7 @@ export default function Index() {
         href="/(auth)/sign-up"
         className="mt-4 rounded bg-primary text-white p-4"
       >
-        <Text>Go to sign up</Text>
+        <Text className="tabs-glyph">Go to sign up</Text>
       </Link>
 
       <Link href="/subscriptions/spotify" className="">
