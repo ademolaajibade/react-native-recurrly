@@ -3,7 +3,7 @@ import {
   formatStatusLabel,
   formatSubscriptionDateTime,
 } from "@/lib/utils";
-import clsx from "clsx";
+import {clsx} from "clsx";
 import React from "react";
 import { Image, Pressable, Text, View } from "react-native";
 
@@ -77,7 +77,7 @@ const SubscriptionCard = ({
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
-                {startDate ? formatSubscriptionDateTime(startDate) : ""}
+                {formatSubscriptionDateTime(startDate)}
               </Text>
             </View>
             <View className="sub-row">
@@ -87,7 +87,7 @@ const SubscriptionCard = ({
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
-                {renewalDate ? formatSubscriptionDateTime(renewalDate) : ""}
+                {formatSubscriptionDateTime(renewalDate)}
               </Text>
             </View>
             <View className="sub-row">
@@ -97,7 +97,7 @@ const SubscriptionCard = ({
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
-                {status ? formatStatusLabel(status) : "Not provided"}
+                {formatStatusLabel(status)}
               </Text>
             </View>
           </View>
