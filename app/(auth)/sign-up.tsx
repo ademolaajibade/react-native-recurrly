@@ -48,14 +48,18 @@ export default function SignUp() {
     }
     setLocalErrors({});
 
-    const { error } = await signUp.password({ emailAddress: email.trim(), password });
+    try {
+      const { error } = await signUp.password({ emailAddress: email.trim(), password });
 
-    if (error) {
-      setGeneralError(error.message ?? 'Could not create account. Please try again.');
-      return;
+      if (error) {
+        setGeneralError(error.message ?? 'Could not create account. Please try again.');
+        return;
+      }
+
+      await signUp.verifications.sendEmailCode();
+    } catch (err: any) {
+      setGeneralError(err?.message ?? 'Could not create account. Please try again.');
     }
-
-    await signUp.verifications.sendEmailCode();
   }
 
   async function handleVerify() {
@@ -66,17 +70,21 @@ export default function SignUp() {
     }
     setLocalErrors({});
 
-    await signUp.verifications.verifyEmailCode({ code: code.trim() });
+    try {
+      await signUp.verifications.verifyEmailCode({ code: code.trim() });
 
-    if (signUp.status === 'complete') {
-      await signUp.finalize({
-        navigate: ({ session }) => {
-          if (session?.currentTask) return;
-          router.replace('/');
-        },
-      });
-    } else {
-      setGeneralError('Verification failed. Please check the code and try again.');
+      if (signUp.status === 'complete') {
+        await signUp.finalize({
+          navigate: ({ session }) => {
+            if (session?.currentTask) return;
+            router.replace('/');
+          },
+        });
+      } else {
+        setGeneralError('Verification failed. Please check the code and try again.');
+      }
+    } catch (err: any) {
+      setGeneralError(err?.message ?? 'Could not create account. Please try again.');
     }
   }
 
@@ -162,7 +170,13 @@ export default function SignUp() {
                   {/* Resend code */}
                   <Pressable
                     className="auth-secondary-button"
-                    onPress={() => signUp.verifications.sendEmailCode()}
+                    onPress={async () => {
+                      try {
+                        await signUp.verifications.sendEmailCode();
+                      } catch (err: any) {
+                        setGeneralError(err?.message ?? 'Could not create account. Please try again.');
+                      }
+                    }}
                     disabled={isBusy}
                   >
                     <Text className="auth-secondary-button-text">Resend code</Text>

@@ -1,7 +1,7 @@
 import { useClerk, useUser } from '@clerk/expo';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import images from '@/assets/constants/images';
@@ -37,9 +37,20 @@ export default function Settings() {
     : '—';
   const avatarSource = user?.imageUrl ? { uri: user.imageUrl } : images.avatar;
 
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState('');
+
   async function handleSignOut() {
-    await signOut();
-    router.replace('/(auth)/sign-in');
+    setSignOutError('');
+    setIsSigningOut(true);
+    try {
+      await signOut();
+      router.replace('/(auth)/sign-in');
+    } catch (err: any) {
+      setSignOutError(err?.message ?? 'Sign out failed. Please try again.');
+    } finally {
+      setIsSigningOut(false);
+    }
   }
 
   return (
@@ -85,11 +96,19 @@ export default function Settings() {
         </View>
 
         {/* Sign out */}
+        {!!signOutError && (
+          <Text className="text-center text-sm font-sans-medium text-destructive">
+            {signOutError}
+          </Text>
+        )}
         <Pressable
-          className="items-center rounded-2xl bg-accent py-4 mt-2"
+          className={`items-center rounded-2xl bg-accent py-4 mt-2${isSigningOut ? ' opacity-50' : ''}`}
           onPress={handleSignOut}
+          disabled={isSigningOut}
         >
-          <Text className="text-base font-sans-bold text-white">Sign out</Text>
+          <Text className="text-base font-sans-bold text-white">
+            {isSigningOut ? 'Signing out…' : 'Sign out'}
+          </Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

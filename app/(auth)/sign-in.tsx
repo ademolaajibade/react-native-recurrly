@@ -42,20 +42,24 @@ export default function SignIn() {
     }
     setLocalErrors({});
 
-    const { error } = await signIn.password({ emailAddress: email.trim(), password });
+    try {
+      const { error } = await signIn.password({ emailAddress: email.trim(), password });
 
-    if (error) {
-      setGeneralError(error.message ?? 'Sign in failed. Please try again.');
-      return;
-    }
+      if (error) {
+        setGeneralError(error.message ?? 'Sign in failed. Please try again.');
+        return;
+      }
 
-    if (signIn.status === 'complete') {
-      await signIn.finalize({
-        navigate: ({ session }) => {
-          if (session?.currentTask) return;
-          router.replace('/');
-        },
-      });
+      if (signIn.status === 'complete') {
+        await signIn.finalize({
+          navigate: ({ session }) => {
+            if (session?.currentTask) return;
+            router.replace('/');
+          },
+        });
+      }
+    } catch (err: any) {
+      setGeneralError(err?.message ?? 'Sign in failed. Please try again.');
     }
   }
 
