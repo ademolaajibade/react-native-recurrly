@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, Touchable, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 const ListHeading = ({ title }: ListHeadingProps) => {
   return (

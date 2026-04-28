@@ -3,6 +3,10 @@
     "scheme": "recurrly",
     "web": {
       "bundler": "metro"
-    }
+    },
+    "plugins": [
+      "@clerk/expo",
+      "expo-secure-store"
+    ]
   }
 }
