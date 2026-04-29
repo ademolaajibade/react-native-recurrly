@@ -2,6 +2,22 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+## Environment setup
+
+This project requires a `.env` file with Clerk credentials. **Never commit real secrets.**
+
+1. Copy the example file and fill in your own values:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Open `.env` and replace the placeholders:
+   - `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` — your Clerk publishable key (safe to expose to the client)
+   - `CLERK_SECRET_KEY` — your Clerk secret key (server-side only; rotate immediately if leaked via [Clerk dashboard](https://dashboard.clerk.com))
+
+   For CI/CD, inject `CLERK_SECRET_KEY` as an environment secret in your secret manager rather than storing it in a file.
+
 ## Get started
 
 1. Install dependencies

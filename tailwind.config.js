@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // NOTE: Update this to include the paths to all files that contain Nativewind classes.
-  content: ["./app/(tabs)/index.tsx", "./components/**/*.{js,jsx,ts,tsx}"],
+  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
@@ -21,12 +21,12 @@ module.exports = {
         subscription: "#8fd1bd",
       },
       fontFamily: {
-        "sans-light": ["sans-light", "sans-serif"],
-        sans: ["sans-regular", "sans-serif"],
-        "sans-medium": ["sans-medium", "sans-serif"],
-        "sans-semibold": ["sans-semibold", "sans-serif"],
-        "sans-bold": ["sans-bold", "sans-serif"],
-        "sans-extrabold": ["sans-extrabold", "sans-serif"],
+        "sans-light": ["PlusJakartaSans-Light", "sans-serif"],
+        sans: ["PlusJakartaSans-Regular", "sans-serif"],
+        "sans-medium": ["PlusJakartaSans-Medium", "sans-serif"],
+        "sans-semibold": ["PlusJakartaSans-SemiBold", "sans-serif"],
+        "sans-bold": ["PlusJakartaSans-Bold", "sans-serif"],
+        "sans-extrabold": ["PlusJakartaSans-ExtraBold", "sans-serif"],
       },
       borderRadius: {
         "4xl": "2rem",

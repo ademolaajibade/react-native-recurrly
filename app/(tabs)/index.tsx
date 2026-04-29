@@ -1,44 +1,99 @@
-import "@/global.css";
-import { Link } from "expo-router";
-import { Text, View } from "react-native";
+import { useUser } from "@clerk/expo";
+import {
+  HOME_BALANCE,
+  HOME_SUBSCRIPTIONS,
+  UPCOMING_SUBSCRIPTIONS,
+} from "@/assets/constants/data";
+import { icons } from "@/assets/constants/icons";
+import images from "@/assets/constants/images";
+import ListHeading from "@/components/ListHeading";
+import SubscriptionCard from "@/components/SubscriptionCard";
+import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
+import { formatCurrency } from "@/lib/utils";
+import dayjs from "dayjs";
+import { useState } from "react";
+import { FlatList, Image, Text, View } from "react-native";
 
-export default function Index() {
+import { SafeAreaView } from "react-native-safe-area-context";
+
+export default function App() {
+  const { user } = useUser();
+  const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<
+    string | null
+  >(null);
+
+  const displayName = user?.firstName ?? user?.fullName ?? "Welcome";
+  const avatarSource = user?.imageUrl
+    ? { uri: user.imageUrl }
+    : images.avatar;
+
   return (
-    <View className="flex-1 items-center justify-center bg-background">
-      <Text className="text-xl font-bold text-success">
-        Welcome to Nativewind!
-      </Text>
-      <Link
-        href="/Onboarding"
-        className="mt-4 rounded bg-primary text-white p-4"
-      >
-        <Text>Go to onboarding</Text>
-      </Link>
-      <Link
-        href="/(auth)/sign-in"
-        className="mt-4 rounded bg-accent text-white p-4"
-      >
-        <Text>Sign in </Text>
-      </Link>
-      <Link
-        href="/(auth)/sign-up"
-        className="mt-4 rounded bg-primary text-white p-4"
-      >
-        <Text>Go to sign up</Text>
-      </Link>
+    <SafeAreaView className="flex-1 bg-background p-5">
+      <FlatList
+        ListHeaderComponent={() => (
+          <>
+            <View className="home-header">
+              <View className="home-user">
+                <Image source={avatarSource} className="home-avatar" />
+                <Text className="home-user-name">{displayName}</Text>
+              </View>
+              <Image source={icons.add} className="home-add-icon" />
+            </View>
 
-      <Link href="/subscriptions/spotify" className="">
-        <Text>Spotify Subscription</Text>
-      </Link>
-      <Link
-        href={{
-          pathname: "/subscriptions/[id]",
-          params: { id: "claude" },
-        }}
-        className=""
-      >
-        <Text>Claude Max Subscription</Text>
-      </Link>
-    </View>
+            <View className="home-balance-card">
+              <Text className="home-balance-label">Balance</Text>
+
+              <View className="home-balance-row">
+                <Text className="home-balance-amount">
+                  {formatCurrency(HOME_BALANCE.amount)}
+                </Text>
+                <Text className="home-balance-date">
+                  {dayjs(HOME_BALANCE.nextRenewalDate).format("MM/YY")}
+                </Text>
+              </View>
+            </View>
+
+            <View className="mb-5">
+              <ListHeading title="Upcoming Subscriptions" />
+
+              <FlatList
+                data={UPCOMING_SUBSCRIPTIONS}
+                renderItem={({ item }) => (
+                  <UpcomingSubscriptionCard {...item} />
+                )}
+                keyExtractor={(item) => item.id}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                ListEmptyComponent={
+                  <Text className="home-empty">No upcoming renewals</Text>
+                }
+              />
+            </View>
+
+            <ListHeading title="All Subscriptions" />
+          </>
+        )}
+        data={HOME_SUBSCRIPTIONS}
+        renderItem={({ item }) => (
+          <SubscriptionCard
+            {...item}
+            onPress={() =>
+              setExpandedSubscriptionId((currentId) =>
+                currentId === item.id ? null : item.id,
+              )
+            }
+            expanded={expandedSubscriptionId === item.id}
+          />
+        )}
+        keyExtractor={(item) => item.id}
+        extraData={expandedSubscriptionId}
+        ItemSeparatorComponent={() => <View className="h-4" />}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={
+          <Text className="home-empty-state">No subscription yet.</Text>
+        }
+        contentContainerClassName="pb-30"
+      />
+    </SafeAreaView>
   );
 }
