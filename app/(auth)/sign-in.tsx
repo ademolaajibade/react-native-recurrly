@@ -11,12 +11,14 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { usePostHog } from 'posthog-react-native';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SignIn() {
   const { signIn, errors, fetchStatus } = useSignIn();
   const router = useRouter();
+  const posthog = usePostHog();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,6 +49,7 @@ export default function SignIn() {
 
       if (error) {
         setGeneralError(error.message ?? 'Sign in failed. Please try again.');
+        posthog.capture('user_sign_in_failed', { error_message: error.message });
         return;
       }
 
@@ -57,9 +60,12 @@ export default function SignIn() {
             router.replace('/');
           },
         });
+        posthog.identify(email.trim(), { $set: { email: email.trim() } });
+        posthog.capture('user_signed_in', { method: 'email' });
       }
     } catch (err: any) {
       setGeneralError(err?.message ?? 'Sign in failed. Please try again.');
+      posthog.capture('user_sign_in_failed', { error_message: err?.message });
     }
   }
 

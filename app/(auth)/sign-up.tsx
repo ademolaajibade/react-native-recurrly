@@ -11,12 +11,14 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { usePostHog } from 'posthog-react-native';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SignUp() {
   const { signUp, errors, fetchStatus } = useSignUp();
   const router = useRouter();
+  const posthog = usePostHog();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -56,7 +58,9 @@ export default function SignUp() {
         return;
       }
 
+      posthog.capture('user_signed_up', { method: 'email' });
       await signUp.verifications.sendEmailCode();
+      posthog.capture('email_verification_sent', { email: email.trim() });
     } catch (err: any) {
       setGeneralError(err?.message ?? 'Could not create account. Please try again.');
     }
@@ -74,6 +78,11 @@ export default function SignUp() {
       await signUp.verifications.verifyEmailCode({ code: code.trim() });
 
       if (signUp.status === 'complete') {
+        posthog.identify(email.trim(), {
+          $set: { email: email.trim() },
+          $set_once: { signup_date: new Date().toISOString() },
+        });
+        posthog.capture('email_verified', { email: email.trim() });
         await signUp.finalize({
           navigate: ({ session }) => {
             if (session?.currentTask) return;
