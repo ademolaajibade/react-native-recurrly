@@ -13,11 +13,13 @@ import { formatCurrency } from "@/lib/utils";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { FlatList, Image, Text, View } from "react-native";
+import { usePostHog } from "posthog-react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function App() {
   const { user } = useUser();
+  const posthog = usePostHog();
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<
     string | null
   >(null);
@@ -77,11 +79,17 @@ export default function App() {
         renderItem={({ item }) => (
           <SubscriptionCard
             {...item}
-            onPress={() =>
+            onPress={() => {
+              const isCurrentlyExpanded = expandedSubscriptionId === item.id;
               setExpandedSubscriptionId((currentId) =>
                 currentId === item.id ? null : item.id,
-              )
-            }
+              );
+              if (isCurrentlyExpanded) {
+                posthog.capture('subscription_collapsed', { subscription_id: item.id, subscription_name: item.name });
+              } else {
+                posthog.capture('subscription_expanded', { subscription_id: item.id, subscription_name: item.name });
+              }
+            }}
             expanded={expandedSubscriptionId === item.id}
           />
         )}

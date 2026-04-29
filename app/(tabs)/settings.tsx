@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import images from '@/assets/constants/images';
+import { usePostHog } from 'posthog-react-native';
 
 type InfoRowProps = {
   label: string;
@@ -25,6 +26,7 @@ export default function Settings() {
   const { user } = useUser();
   const { signOut } = useClerk();
   const router = useRouter();
+  const posthog = usePostHog();
 
   const displayName = user?.fullName ?? user?.firstName ?? 'User';
   const email = user?.primaryEmailAddress?.emailAddress ?? '—';
@@ -44,6 +46,8 @@ export default function Settings() {
     setSignOutError('');
     setIsSigningOut(true);
     try {
+      posthog.capture('user_signed_out');
+      posthog.reset();
       await signOut();
       router.replace('/(auth)/sign-in');
     } catch (err: any) {
