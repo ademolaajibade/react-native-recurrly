@@ -1,4 +1,5 @@
 import { icons } from "@/assets/constants/icons";
+import { posthog } from "@/src/config/posthog";
 import { clsx } from "clsx";
 import dayjs from "dayjs";
 import React, { useState } from "react";
@@ -83,6 +84,13 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
       startDate: now.toISOString(),
       renewalDate,
       color: CATEGORY_COLORS[category],
+    });
+
+    posthog.capture("subscription_created", {
+      subscription_name: name.trim(),
+      subscription_price: priceValue,
+      subscription_frequency: frequency,
+      subscription_category: category,
     });
 
     handleClose();
